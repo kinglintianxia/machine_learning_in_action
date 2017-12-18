@@ -33,7 +33,7 @@ def classify0(inX, dataSet, labels, k):
 	# Voting with lowest k distances
 	classCount = {}		# classCount = {'A': cnt, 'B': cnt}
 	for i in range(k):
-		# min k distance
+		# min k distance label
 		voteIlabel = labels[sortedDistIndicies[i]]
 		# dict.get(key, default=None)
 		# key -- 字典中要查找的键。
