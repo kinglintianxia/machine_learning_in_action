@@ -16,8 +16,8 @@ def createDataSet():
     return dataSet, labels
 # 计算给定数据集的香农熵
 def calcShannonEnt(dataSet):
-    numEntries = len(dataSet)   # 
-    labelCounts = {}    # 
+    numEntries = len(dataSet)   # 实例总数
+    labelCounts = {}    # dict
     for featVec in dataSet: #the number of unique elements and their occurance
         currentLabel = featVec[-1]  # lable: yes or no
         if currentLabel not in labelCounts.keys(): 
@@ -25,15 +25,15 @@ def calcShannonEnt(dataSet):
         labelCounts[currentLabel] += 1
     shannonEnt = 0.0
     for key in labelCounts:
-        prob = float(labelCounts[key])/numEntries
-        shannonEnt -= prob * log(prob,2) #log base 2
+        prob = float(labelCounts[key])/numEntries # pi
+        shannonEnt -= prob * log(prob,2) #log base 2; (P73,5.2)
     return shannonEnt
 # 划分数据集
 def splitDataSet(dataSet, axis, value): # ：数据集、划分数据集的特征、需要返回的特征的值
-    retDataSet = []
+    retDataSet = [] # list
     for featVec in dataSet:
         if featVec[axis] == value:
-            reducedFeatVec = featVec[:axis] #chop out axis used for splitting
+            reducedFeatVec = featVec[:axis] # chop out axis used for splitting(删除分割轴数据)
             reducedFeatVec.extend(featVec[axis+1:]) # [1,2,3+ 4,5,6]
             retDataSet.append(reducedFeatVec)   # [[#1],[#2]]
     return retDataSet
@@ -51,8 +51,8 @@ def chooseBestFeatureToSplit(dataSet):
         for value in uniqueVals:
             subDataSet = splitDataSet(dataSet, i, value)
             prob = len(subDataSet)/float(len(dataSet))
-            newEntropy += prob * calcShannonEnt(subDataSet)     
-        infoGain = baseEntropy - newEntropy     #calculate the info gain; ie reduction in entropy
+            newEntropy += prob * calcShannonEnt(subDataSet)   # (5.8)  
+        infoGain = baseEntropy - newEntropy  # (5.6)calculate the info gain; ie reduction in entropy
         if (infoGain > bestInfoGain):       #compare this to the best gain so far
             bestInfoGain = infoGain         #if better than current best, set to best
             bestFeature = i
@@ -65,7 +65,7 @@ def majorityCnt(classList):
             classCount[vote] = 0
         classCount[vote] += 1
     sortedClassCount = sorted(classCount.iteritems(), key=operator.itemgetter(1), reverse=True)
-    return sortedClassCount[0][0]
+    return sortedClassCount[0][0]   # return class
 
 def createTree(dataSet,labels):
     classList = [example[-1] for example in dataSet]
@@ -75,8 +75,8 @@ def createTree(dataSet,labels):
         return majorityCnt(classList)
     bestFeat = chooseBestFeatureToSplit(dataSet)
     bestFeatLabel = labels[bestFeat]
-    myTree = {bestFeatLabel:{}}
-    del(labels[bestFeat])
+    myTree = {bestFeatLabel:{}} # root
+    del(labels[bestFeat]) # delete used feature
     featValues = [example[bestFeat] for example in dataSet]
     uniqueVals = set(featValues)
     for value in uniqueVals:
@@ -119,7 +119,7 @@ if __name__ == "__main__":
     print "shannonEnt: ", shannonEnt
     # 
     print "split(0,1): ", splitDataSet(dataSet, 0, 1)
-    print "split(0,0): ", splitDataSet(dataSet, 1, 0)
+    print "split(1,0): ", splitDataSet(dataSet, 1, 0)
     print "best Feature: ", chooseBestFeatureToSplit(dataSet)
     # classify
     tree = createTree(dataSet, labels)
